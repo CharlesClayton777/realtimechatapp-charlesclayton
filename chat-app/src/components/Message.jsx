@@ -1,16 +1,39 @@
-import React from 'react'
+import React, { useContext, useEffect, useRef } from "react";
+import { AuthContext } from "../context/AuthContext";
+import { ChatContext } from "../context/ChatContext";
 
-export const Message = () => {
+export const Message = ({ message }) => {
+  const { currentUser } = useContext(AuthContext);
+  const { data } = useContext(ChatContext);
+
+  const ref = useRef();
+
+  useEffect(() => {
+    ref.current?.scrollIntoView({ behavior: "smooth" });
+  }, [message]);
+
   return (
-    <div className="message">
+    <div
+      ref={ref}
+      className={`message ${message.senderId === currentUser.uid && "owner"}`}
+    >
       <div className="messageInfo">
-        <img src="https://www.politico.eu/cdn-cgi/image/width=1160,height=773,quality=80,onerror=redirect,format=auto/wp-content/uploads/2022/05/25/GettyImages-1240870507-scaled.jpg" alt=""/>
-        <span>Just Now</span>
-        </div>
+        <img
+          src={
+            message.senderId === currentUser.uid
+              ? currentUser.photoURL
+              : data.user.photoURL
+          }
+          alt=""
+        />
+        <span>just now</span>
+      </div>
       <div className="messageContent">
-      <p>Hello</p>
-      <img src="https://www.fleetalliance.co.uk/wp-content/uploads/2021/01/brexit-deal-agreed-1.jpg" alt=""/>
+        <p>{message.text}</p>
+        {message.img && <img src={message.img} alt="" />}
+      </div>
     </div>
-  </div>
-  )
-}
+  );
+};
+
+export default Message;
